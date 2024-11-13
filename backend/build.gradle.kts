@@ -110,10 +110,10 @@ jib.to.setCredHelper("ecr-login")
 
 jib {
     from {
-        image = "openjdk:17-alpine"
+        image = "eclipse-temurin:21-jdk-alpine"
     }
     container {
-        ports = listOf<String>("8553")
+        ports = listOf<String>("8080")
     }
 }
 
