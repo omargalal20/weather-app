@@ -3,7 +3,18 @@ spring:
     url: ${SPRING_DATASOURCE_URL}
     username: ${SPRING_DATASOURCE_USERNAME}
     password: ${SPRING_DATASOURCE_PASSWORD}
-  jpa.generate-ddl: true
+  jpa:
+    generate-ddl: true
+  flyway:
+    enabled: false
+  cloud:
+    openfeign:
+      client:
+        config:
+          weather:
+            url: ${SPRING_CLOUD_OPENFEIGN_CLIENT_CONFIG_WEATHER_URL}
+weather:
+  apikey: ${WEATHER_APIKEY}
 
 server:
   port: ${SERVER_PORT}
