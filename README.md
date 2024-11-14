@@ -4,8 +4,8 @@
 
 ## Tech Stack
 
-**Frontend: React, Typescript, Redux, StyledComponents**
-**Backend: Spring Boot**
+- **Frontend: React, Typescript, Redux, StyledComponents**
+- **Backend: Spring Boot**
 
 ## Features
 
