@@ -6,11 +6,12 @@ import { fetchCities } from './../../api/placeSuggestion';
 import { useClickOutside } from './../../hooks/useClickOutside';
 import { LocationButton, LocationIcon, SearchElement, SearchIcon, SearchInput, SearchResult } from './styled';
 import Suggestion from './Suggestion';
+import { CitySuggestionData } from '../../api/types';
 
 const Search: React.FC = () => {
   const dispatch = useDispatch();
   const suggestionRef = useRef(null);
-  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [suggestions, setSuggestions] = useState<CitySuggestionData[]>([]);
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -19,8 +20,8 @@ const Search: React.FC = () => {
       return;
     }
     setShowSuggestions(true);
-    fetchCities(searchTerm).then((res) => {
-      setSuggestions(res);
+    fetchCities(searchTerm).then((suggestionsResponse) => {
+      setSuggestions(suggestionsResponse);
     });
   }, [searchTerm]);
 
@@ -37,6 +38,7 @@ const Search: React.FC = () => {
       })
     );
   };
+  console.log(`Suggestions, ${JSON.stringify(suggestions)}`)
   return (
     <SearchElement>
       <SearchIcon />
@@ -54,10 +56,12 @@ const Search: React.FC = () => {
       </LocationButton>
       {showSuggestions && (
         <SearchResult ref={suggestionRef}>
-          {suggestions?.slice(0, 6)?.map((s, i) => (
+          {suggestions?.slice(0, 6)?.map((suggestion, i) => (
             <Suggestion
               key={i}
-              label={s}
+              label={suggestion.name + ', ' + (suggestion.state || suggestion.country)}
+              latitude={suggestion.lat}
+              longitude={suggestion.lon}
               hideSuggestionFn={() => {
                 setShowSuggestions(false);
               }}

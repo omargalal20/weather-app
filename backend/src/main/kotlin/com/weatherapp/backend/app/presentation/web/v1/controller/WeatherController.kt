@@ -28,11 +28,12 @@ class WeatherController(
         produces = [MediaType.APPLICATION_JSON_VALUE],
     )
     fun getCurrentWeather(
-        @RequestParam("city") city: String,
+        @RequestParam("latitude") latitude: Float,
+        @RequestParam("longitude") longitude: Float,
     ): ResponseEntity<WeatherResponse> {
-        log.info { "getCurrent, WeatherController, $city" }
+        log.info { "getCurrent, WeatherController, latitude: $latitude, longitude: $longitude" }
 
-        val currentWeather = weatherService.getCurrentWeather(city)
+        val currentWeather = weatherService.getCurrentWeather(latitude, longitude)
         val response = weatherMapper.toWeatherResponse(currentWeather)
 
         return ResponseEntity
@@ -45,11 +46,12 @@ class WeatherController(
         produces = [MediaType.APPLICATION_JSON_VALUE],
     )
     fun getForecastedWeather(
-        @RequestParam("city") city: String,
+        @RequestParam("latitude") latitude: Float,
+        @RequestParam("longitude") longitude: Float,
     ): ResponseEntity<ForecastResponse> {
-        log.info { "getCurrent, WeatherController, $city" }
+        log.info { "getCurrent, WeatherController, latitude: $latitude, longitude: $longitude" }
 
-        val currentWeather = weatherService.getForecastedWeather(city)
+        val currentWeather = weatherService.getForecastedWeather(latitude, longitude)
         val response = weatherMapper.toForecastResponse(currentWeather)
 
         return ResponseEntity

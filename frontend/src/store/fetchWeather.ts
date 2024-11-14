@@ -14,10 +14,6 @@ export const fetchWeather = createAsyncThunk(
       const res = await Promise.all([fetchWeatherData(city), fetchExtendedForecastData(city)]);
       dispatch(setIsLoading(false));
 
-      console.log(`Response, fetchWeather,  r0: ${JSON.stringify(res[0])}}`)
-
-      console.log(`Response, fetchWeather,  r1: ${JSON.stringify(res[1])}`)
-
       if (res[0].cod === 200) {
         dispatch(setIsInitial(false));
         return res;

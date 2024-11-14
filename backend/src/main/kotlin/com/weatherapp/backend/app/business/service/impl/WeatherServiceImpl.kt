@@ -9,28 +9,32 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Service
 
 private val log = KotlinLogging.logger {}
+private const val FORECASTED_DAYS_COUNT = 7
 
 @Service
 class WeatherServiceImpl(
     private val weatherClient: WeatherClient,
     private val weatherClientConfig: WeatherClientConfig,
 ) : WeatherService {
-    companion object {
-        private const val FORECASTED_DAYS_COUNT = 7
-    }
+    override fun getCurrentWeather(
+        latitude: Float,
+        longitude: Float,
+    ): CurrentWeatherResponse {
+        log.info { "getCurrentWeather, WeatherServiceImpl: latitude: $latitude, longitude: $longitude" }
 
-    override fun getCurrentWeather(city: String): CurrentWeatherResponse {
-        log.info { "getCurrentWeather, WeatherServiceImpl: $city" }
-
-        val response = weatherClient.getCurrent(city, weatherClientConfig.weatherApiKey)
+        val response = weatherClient.getCurrent(latitude, longitude, weatherClientConfig.weatherApiKey)
 
         return response
     }
 
-    override fun getForecastedWeather(city: String): ForecastWeatherResponse {
-        log.info { "getForecastedWeather, WeatherServiceImpl: $city" }
+    override fun getForecastedWeather(
+        latitude: Float,
+        longitude: Float,
+    ): ForecastWeatherResponse {
+        log.info { "getForecastedWeather, WeatherServiceImpl: latitude: $latitude, longitude: $longitude" }
 
-        val response = weatherClient.getForecast(city, FORECASTED_DAYS_COUNT, weatherClientConfig.weatherApiKey)
+        val response =
+            weatherClient.getForecast(latitude, longitude, FORECASTED_DAYS_COUNT, weatherClientConfig.weatherApiKey)
 
         return response
     }

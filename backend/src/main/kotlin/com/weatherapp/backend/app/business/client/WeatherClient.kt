@@ -12,13 +12,15 @@ import org.springframework.web.bind.annotation.RequestParam
 interface WeatherClient {
     @GetMapping("/weather")
     fun getCurrent(
-        @RequestParam q: String,
+        @RequestParam("lat") latitude: Float,
+        @RequestParam("lon") longitude: Float,
         @RequestParam apiKey: String,
     ): CurrentWeatherResponse
 
     @GetMapping("/forecast")
     fun getForecast(
-        @RequestParam q: String,
+        @RequestParam("lat") latitude: Float,
+        @RequestParam("lon") longitude: Float,
         @RequestParam cnt: Int,
         @RequestParam apiKey: String,
     ): ForecastWeatherResponse

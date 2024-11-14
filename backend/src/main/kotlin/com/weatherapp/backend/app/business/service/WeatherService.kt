@@ -4,7 +4,13 @@ import com.weatherapp.backend.app.business.client.model.response.CurrentWeatherR
 import com.weatherapp.backend.app.business.client.model.response.ForecastWeatherResponse
 
 interface WeatherService {
-    fun getCurrentWeather(city: String): CurrentWeatherResponse
+    fun getCurrentWeather(
+        latitude: Float,
+        longitude: Float,
+    ): CurrentWeatherResponse
 
-    fun getForecastedWeather(city: String): ForecastWeatherResponse
+    fun getForecastedWeather(
+        latitude: Float,
+        longitude: Float,
+    ): ForecastWeatherResponse
 }

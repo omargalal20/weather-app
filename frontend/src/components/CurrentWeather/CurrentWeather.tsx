@@ -40,8 +40,6 @@ const CurrentWeather: React.FC = () => {
 
   if (isInitial) return <></>;
 
-  console.log(`CurrentWeather, weather: ${JSON.stringify(weather)}`)
-
   return (
     weather && (
       <WeatherContainer>

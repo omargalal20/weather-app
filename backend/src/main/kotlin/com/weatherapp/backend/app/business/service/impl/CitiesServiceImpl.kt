@@ -8,16 +8,13 @@ import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.stereotype.Service
 
 private val log = KotlinLogging.logger {}
+private const val LIMIT = 5
 
 @Service
 class CitiesServiceImpl(
     private val geocodeClient: GeocodeClient,
     private val weatherClientConfig: WeatherClientConfig,
 ) : CitiesService {
-    companion object {
-        private const val LIMIT = 5
-    }
-
     override fun getMany(city: String): List<GeocodeResponse> {
         log.info { "getMany, CitiesServiceImpl: $city" }
 

@@ -8,10 +8,8 @@ export const fetchCities = async (search: string) => {
     await fetch(url)
   ).json();
 
-  console.log(response)
-
   return response
     .map((city: CitySuggestionData) => {
-      return city.name + ', ' + (city.state || city.country);
+      return city
     });
 };
