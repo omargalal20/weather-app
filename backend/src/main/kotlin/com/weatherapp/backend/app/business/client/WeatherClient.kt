@@ -19,6 +19,7 @@ interface WeatherClient {
     @GetMapping("/forecast")
     fun getForecast(
         @RequestParam q: String,
+        @RequestParam cnt: Int,
         @RequestParam apiKey: String,
     ): ForecastWeatherResponse
 }

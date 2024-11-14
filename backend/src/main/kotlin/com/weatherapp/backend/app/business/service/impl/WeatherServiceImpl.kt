@@ -15,6 +15,10 @@ class WeatherServiceImpl(
     private val weatherClient: WeatherClient,
     private val weatherClientConfig: WeatherClientConfig,
 ) : WeatherService {
+    companion object {
+        private const val FORECASTED_DAYS_COUNT = 7
+    }
+
     override fun getCurrentWeather(city: String): CurrentWeatherResponse {
         log.info { "getCurrentWeather, WeatherServiceImpl: $city" }
 
@@ -26,7 +30,7 @@ class WeatherServiceImpl(
     override fun getForecastedWeather(city: String): ForecastWeatherResponse {
         log.info { "getForecastedWeather, WeatherServiceImpl: $city" }
 
-        val response = weatherClient.getForecast(city, weatherClientConfig.weatherApiKey)
+        val response = weatherClient.getForecast(city, FORECASTED_DAYS_COUNT, weatherClientConfig.weatherApiKey)
 
         return response
     }
