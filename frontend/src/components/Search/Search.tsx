@@ -21,7 +21,7 @@ const Search: React.FC = () => {
     }
     setShowSuggestions(true);
     fetchCities(searchTerm).then((suggestionsResponse) => {
-      setSuggestions(suggestionsResponse);
+    setSuggestions(suggestionsResponse);
     });
   }, [searchTerm]);
 
@@ -31,6 +31,7 @@ const Search: React.FC = () => {
     setSearchTerm(e.target.value);
   };
   const showPosition = (position: any) => {
+    setSearchTerm('');
     dispatch(
       fetchWeather({
         lat: position.coords.latitude,
@@ -38,7 +39,6 @@ const Search: React.FC = () => {
       })
     );
   };
-  console.log(`Suggestions, ${JSON.stringify(suggestions)}`)
   return (
     <SearchElement>
       <SearchIcon />

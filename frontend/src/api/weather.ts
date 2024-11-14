@@ -1,8 +1,6 @@
 const BASE_URL = process.env.REACT_APP_BACKEND_URL;
 
 export const fetchWeatherData = async (city: string | { lat: number; lng: number }) => {
-  console.log(`fetchWeatherData, city: ${JSON.stringify(city)}`)
-
   let url = `${BASE_URL}/weathers?city=${city}`;
 
   if (typeof city === 'object') {
@@ -12,8 +10,6 @@ export const fetchWeatherData = async (city: string | { lat: number; lng: number
 };
 
 export const fetchExtendedForecastData = async (city: string | { lat: number; lng: number }) => {
-  console.log(`fetchWeatherData, city: ${JSON.stringify(city)}`)
-
   let url = `${BASE_URL}/weathers/forecast?city=${city}`;
 
   if (typeof city === 'object') {
