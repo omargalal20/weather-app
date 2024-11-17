@@ -70,7 +70,7 @@ pipeline {
                             writeFile file: 'docker/backend-service-variables.env', text: readFile(backend_service_variables)
 
                             sh "aws ecr get-login-password --region ${REGION} | docker login --username AWS --password-stdin ${ECR_URL}"
-                            sh "docker-compose -f ./${DEPLOYMENT_FILE} --env-file ./docker/backend-service-variables.env config | docker-compose -f ./${DEPLOYMENT_FILE} --with-registry-auth up -d"
+                            sh "docker-compose -f ./${DEPLOYMENT_FILE} --env-file ./docker/backend-service-variables.env config | docker-compose -f ./${DEPLOYMENT_FILE} up -d"
                         }
                     }
                 }
