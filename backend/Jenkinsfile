@@ -38,7 +38,9 @@ pipeline {
                             string(credentialsId: 'ecr-url', variable: 'ECR_URL'),
                             string(credentialsId: 'aws-region', variable: 'REGION')
                         ]) {
-                            sh "aws ecr get-login-password --region ${REGION} | docker login --username AWS --password-stdin ${ECR_URL}"
+                            withAWS(credentials: 'aws', region: 'us-west-2') {
+                                sh "aws ecr get-login-password --region ${REGION} | docker login --username AWS --password-stdin ${ECR_URL}"
+                            }
 
                             version_value = sh(returnStdout: true, script: "grep -o 'version = [^,]*' build.gradle.kts").trim()
                             version = version_value.split(/ = /)[1].replaceAll('"', '')
