@@ -13,6 +13,6 @@ interface GeocodeClient {
     fun getCities(
         @RequestParam q: String,
         @RequestParam limit: Int,
-        @RequestParam apiKey: String,
+        @RequestParam("appid") appId: String,
     ): List<GeocodeResponse>
 }
