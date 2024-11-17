@@ -4,6 +4,7 @@ pipeline {
     agent any
 
     environment {
+        CI = 'true'
         SERVICE_NAME = 'backend'
         ECR_REPO = 'weather-app-backend-repo'
         DEPLOYMENT_FILE = 'docker/docker-compose.backend.yml'

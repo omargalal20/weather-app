@@ -31,6 +31,10 @@ resource "local_file" "tf_key" {
   filename = var.key_pair_file_path
 }
 
+resource "aws_iam_instance_profile" "server_instance_profile" {
+  name = "${var.namespace}-server-instance-profile"
+  role = var.iam_role_name
+}
 
 resource "aws_instance" "server_instance" {
   ami                         = data.aws_ami.latest-amazon-linux-image.id
@@ -39,6 +43,7 @@ resource "aws_instance" "server_instance" {
   subnet_id                   = var.vpc.public_subnets[0]
   vpc_security_group_ids      = [aws_security_group.server.id]
   associate_public_ip_address = true
+  iam_instance_profile        = aws_iam_instance_profile.server_instance_profile.name
 
   root_block_device {
     volume_size = 50
