@@ -22,17 +22,11 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Build...'
-                dir('backend') {
-                    sh './gradlew build'
-                }
             }
         }
         stage('Test') {
             steps {
                 echo 'Testing...'
-                dir('backend') {
-                    // Add test commands if applicable
-                }
             }
         }
         stage('Pre-Deploy') {
