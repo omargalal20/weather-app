@@ -13,7 +13,7 @@ WORKDIR /usr/src/app
 COPY package*.json ./
 
 # Install dependencies
-RUN npm install && npm cache clean
+RUN npm install --legacy-peer-deps
 
 # Copy the rest of the application files
 COPY . .
