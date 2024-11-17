@@ -1,0 +1,101 @@
+properties([pipelineTriggers([githubPush()])])
+
+pipeline {
+    agent any
+
+    environment {
+        SERVICE_NAME = 'backend'
+        ECR_REPO = 'weather-app-backend-repo'
+        DEPLOYMENT_FILE = 'docker/docker-compose.backend.yml'
+    }
+
+    stages {
+        stage('Pre-Build') {
+            steps {
+                echo 'Pre Build...'
+                dir('backend') { // Change directory to backend
+                    sh 'chmod +x ./gradlew'
+                    sh './gradlew clean'
+                }
+            }
+        }
+        stage('Build') {
+            steps {
+                echo 'Build...'
+                dir('backend') {
+                    sh './gradlew build'
+                }
+            }
+        }
+        stage('Test') {
+            steps {
+                echo 'Testing...'
+                dir('backend') {
+                    // Add test commands if applicable
+                }
+            }
+        }
+        stage('Pre-Deploy') {
+            steps {
+                echo 'Pre-Deploy...'
+                dir('backend') {
+                    script {
+                        withCredentials([
+                            string(credentialsId: 'ecr-url', variable: 'ECR_URL'),
+                            string(credentialsId: 'aws-region', variable: 'REGION')
+                        ]) {
+                            sh "aws ecr get-login-password --region ${REGION} | docker login --username AWS --password-stdin ${ECR_URL}"
+
+                            version_value = sh(returnStdout: true, script: "grep -o 'version = [^,]*' build.gradle.kts").trim()
+                            version = version_value.split(/ = /)[1].replaceAll('"', '')
+
+                            sh "./gradlew jib -Djib.to.image=${ECR_URL}/${ECR_REPO}:${version}"
+
+                            data = readYaml file: DEPLOYMENT_FILE
+                            data.services[SERVICE_NAME].image = "${ECR_URL}/${ECR_REPO}:${version}"
+                            writeYaml file: DEPLOYMENT_FILE, data: data, overwrite: true
+                        }
+                    }
+                }
+            }
+        }
+        stage('Deploy') {
+            steps {
+                echo 'Deploying...'
+                dir('backend') {
+                    script {
+                        withCredentials([string(credentialsId: 'ecr-url', variable: 'ECR_URL'),
+                                         string(credentialsId: 'aws-region', variable: 'REGION'),
+                                         file(credentialsId: 'backend-service-variables', variable: 'backend_service_variables')]) {
+                            writeFile file: 'docker/backend-service-variables.env', text: readFile(backend_service_variables)
+
+                            withAWS(credentials: 'aws', region: 'us-west-2') {
+                                sh "aws ecr get-login-password --region ${REGION} | docker login --username AWS --password-stdin ${ECR_URL}"
+                            }
+
+                            withAWS(credentials: 'aws', region: 'us-west-2') {
+                                echo 'Deploying...'
+                                sh "aws ecr get-login-password --region ${REGION} | docker login --username AWS --password-stdin ${ECR_URL}"
+                                sh "docker-compose -f ./${DEPLOYMENT_FILE} --env-file ./docker/backend-service-variables.env config | docker-compose -f ./${DEPLOYMENT_FILE} --with-registry-auth up -d"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        stage('Post-Deploy') {
+            steps {
+                echo 'Post Deploy..'
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Pipeline succeeded.'
+        }
+        failure {
+            echo 'Pipeline failed.'
+        }
+    }
+}

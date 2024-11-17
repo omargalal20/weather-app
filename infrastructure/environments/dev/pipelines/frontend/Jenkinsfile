@@ -1,0 +1,205 @@
+properties([pipelineTriggers([githubPush()])])
+
+pipeline {
+    agent any
+
+    environment {
+        BUILD_VERSION = '1.0.25'
+        SERVICE_NAME = 'othaim-admin-web-app'
+    }
+
+    stages {
+        stage('Pre-Build') {
+            steps {
+                echo 'Pre-Build...'
+            }
+        }
+        stage('Build') {
+            steps {
+                echo 'Building...'
+
+                script {
+                    branchName = env.GIT_BRANCH.split('/')[1]
+                    if (branchName == 'production') {
+                        echo 'Production Branch...'
+
+                        ECR_REPO =  'alothaimtms-admin-prod-web-app-repo'
+
+                        withCredentials([string(credentialsId: 'othaim-tms-prod-ecr-repo', variable: 'ECR_URL')]) {
+                                sh "docker build --memory=800m --memory-swap=4g --build-arg BUILD_ENV=production --build-arg MAX_OLD_SPACE_SIZE=2048 -t ${ECR_REPO}:${BUILD_VERSION} ."
+                                sh "docker tag ${ECR_REPO}:${BUILD_VERSION} ${ECR_URL}/${ECR_REPO}:${BUILD_VERSION}"
+                        }
+                    } else if (branchName == 'staging') {
+                        echo 'Staging Branch...'
+
+                        ECR_REPO =  'alothaimtms-admin-web-app-repo'
+
+                        withCredentials([string(credentialsId: 'othaim-tms-staging-ecr-repo', variable: 'ECR_URL')]) {
+                                sh "docker build --memory=800m --memory-swap=4g --build-arg BUILD_ENV=staging --build-arg MAX_OLD_SPACE_SIZE=2048 -t ${ECR_REPO}:${BUILD_VERSION} ."
+                                sh "docker tag ${ECR_REPO}:${BUILD_VERSION} ${ECR_URL}/${ECR_REPO}:${BUILD_VERSION}"
+                        }
+                    } else if (branchName == 'development') {
+                        echo 'Development Branch...'
+
+                        ECR_REPO =  'othaim-admin-web-app-repo'
+
+                        withCredentials([string(credentialsId: 'othaim-ecr-url', variable: 'ECR_URL')]) {
+                                sh "docker build --memory=800m --memory-swap=4g --build-arg BUILD_ENV=development --build-arg MAX_OLD_SPACE_SIZE=4096 -t ${ECR_REPO}:${BUILD_VERSION} ."
+                                sh "docker tag ${ECR_REPO}:${BUILD_VERSION} ${ECR_URL}/${ECR_REPO}:${BUILD_VERSION}"
+                        }
+                    } else {
+                        echo "Unsupported branch: ${branchName}"
+                    }
+                }
+            }
+        }
+        stage('Test') {
+            steps {
+                echo 'Testing..'
+            }
+        }
+        stage('Push Docker Image to ECR') {
+            steps {
+                echo 'Pushing...'
+
+                script {
+                    branchName = env.GIT_BRANCH.split('/')[1]
+                    if (branchName == 'production') {
+                        echo 'Production Branch...'
+                        ECR_REPO =  'alothaimtms-admin-prod-web-app-repo'
+                        DEPLOYMENT_FILE = 'docker-compose.othaim-tms-production-admin-web-app.yml'
+
+                        withCredentials([string(credentialsId: 'othaim-tms-prod-ecr-repo', variable: 'ECR_URL'),
+                            string(credentialsId: 'othaim-tms-aws-region', variable: 'REGION')]) {
+                                withAWS(credentials: 'aws', region: 'us-west-2') {
+                                    echo 'Pushing...'
+                                    sh "aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin ${ECR_URL}"
+                                    sh "docker push ${ECR_URL}/${ECR_REPO}:${BUILD_VERSION}"
+                                }
+                            }
+
+                    } else if (branchName == 'staging') {
+                        echo 'Staging Branch...'
+
+                        ECR_REPO =  'alothaimtms-admin-web-app-repo'
+                        DEPLOYMENT_FILE = 'docker-compose.othaim-tms-staging-admin-web-app.yml'
+
+                        withCredentials([string(credentialsId: 'othaim-tms-staging-ecr-repo', variable: 'ECR_URL'),
+                            string(credentialsId: 'othaim-tms-aws-region', variable: 'REGION')]) {
+                                withAWS(credentials: 'aws', region: 'us-west-2') {
+                                    echo 'Pushing...'
+                                    sh "aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin ${ECR_URL}"
+                                    sh "docker push ${ECR_URL}/${ECR_REPO}:${BUILD_VERSION}"
+                                }
+                            }
+                    } else if (branchName == 'development') {
+                        echo 'Development Branch...'
+
+                        ECR_REPO =  'othaim-admin-web-app-repo'
+                        DEPLOYMENT_FILE = 'docker-compose.othaim-mobile-web-app.yml'
+
+                        withCredentials([string(credentialsId: 'othaim-ecr-url', variable: 'ECR_URL'),
+                            string(credentialsId: 'othaim-aws-region', variable: 'REGION')]) {
+                                withAWS(credentials: 'aws', region: 'us-west-2') {
+                                    echo 'Pushing...'
+                                    sh "aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin ${ECR_URL}"
+                                    sh "docker push ${ECR_URL}/${ECR_REPO}:${BUILD_VERSION}"
+                                }
+                            }
+                    } else {
+                        echo "Unsupported branch: ${branchName}"
+                    }
+                }
+            }
+        }
+        stage('Deploy App') {
+            steps {
+                echo 'Deploying...'
+
+                script {
+                    branchName = env.GIT_BRANCH.split('/')[1]
+                    if (branchName == 'production') {
+                        echo 'Production Branch...'
+                        ECR_REPO =  'alothaimtms-admin-prod-web-app-repo'
+                        DEPLOYMENT_FILE = 'docker-compose.othaim-tms-production-admin-web-app.yml'
+
+                        withCredentials([string(credentialsId: 'othaim-tms-prod-ecr-repo', variable: 'ECR_URL'),
+                            string(credentialsId: 'othaim-tms-aws-region', variable: 'REGION')]) {
+                                script {
+                                    sh(script: 'env', returnStdout: true)
+                                    filename = "${DEPLOYMENT_FILE}"
+                                    data = readYaml file: filename
+                                    newImage = "${ECR_URL}/${ECR_REPO}:${BUILD_VERSION}".replaceAll('\"', '')
+                                    data.services["${SERVICE_NAME}"].image = newImage
+                                    writeYaml file: filename, data: data, overwrite: true
+                                }
+
+                                withAWS(credentials: 'aws', region: 'us-west-2') {
+                                    sh "aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin ${ECR_URL}"
+                                    sh "docker stack deploy ${SERVICE_NAME} --with-registry-auth --compose-file=./${DEPLOYMENT_FILE}"
+                                }
+                            }
+
+                    } else if (branchName == 'staging') {
+                        echo 'Staging Branch...'
+
+                        ECR_REPO =  'alothaimtms-admin-web-app-repo'
+                        DEPLOYMENT_FILE = 'docker-compose.othaim-tms-staging-admin-web-app.yml'
+
+                        withCredentials([string(credentialsId: 'othaim-tms-staging-ecr-repo', variable: 'ECR_URL'),
+                            string(credentialsId: 'othaim-tms-aws-region', variable: 'REGION')]) {
+                                script {
+                                    sh(script: 'env', returnStdout: true)
+                                    filename = "${DEPLOYMENT_FILE}"
+                                    data = readYaml file: filename
+                                    newImage = "${ECR_URL}/${ECR_REPO}:${BUILD_VERSION}".replaceAll('\"', '')
+                                    data.services["${SERVICE_NAME}"].image = newImage
+                                    writeYaml file: filename, data: data, overwrite: true
+                                }
+
+                                withAWS(credentials: 'aws', region: 'us-west-2') {
+                                    sh "aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin ${ECR_URL}"
+                                    sh "docker stack deploy ${SERVICE_NAME} --with-registry-auth --compose-file=./${DEPLOYMENT_FILE}"
+                                }
+                            }
+                    } else if (branchName == 'development') {
+                        echo 'Development Branch...'
+
+                        ECR_REPO =  'othaim-admin-web-app-repo'
+                        DEPLOYMENT_FILE = 'docker-compose.othaim-admin-web-app.yml'
+
+                        withCredentials([string(credentialsId: 'othaim-ecr-url', variable: 'ECR_URL'),
+                            string(credentialsId: 'othaim-aws-region', variable: 'REGION')]) {
+                                script {
+                                    sh(script: 'env', returnStdout: true)
+                                    filename = "${DEPLOYMENT_FILE}"
+                                    data = readYaml file: filename
+                                    newImage = "${ECR_URL}/${ECR_REPO}:${BUILD_VERSION}".replaceAll('\"', '')
+                                    data.services["${SERVICE_NAME}"].image = newImage
+                                    writeYaml file: filename, data: data, overwrite: true
+                                }
+
+                                withAWS(credentials: 'aws', region: 'us-west-2') {
+                                    sh "aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin ${ECR_URL}"
+                                    sh "docker stack deploy ${SERVICE_NAME} --with-registry-auth --compose-file=./${DEPLOYMENT_FILE}"
+                                }
+                            }
+                    } else {
+                        echo "Unsupported branch: ${branchName}"
+                    }
+                }
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'Success...'
+            echo 'Send status Success to Mail, Telegram, Slack...'
+        }
+        failure {
+            echo 'Failure...'
+            echo 'Send status Failure to Mail, Telegram, Slack...'
+        }
+    }
+}

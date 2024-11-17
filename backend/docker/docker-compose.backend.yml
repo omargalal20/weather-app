@@ -1,0 +1,34 @@
+# Usage
+#   Start:          docker-compose -f docker-compose.backend.yaml up -d
+
+version: "3"
+
+services:
+  backend:
+    image: image-env
+    networks:
+      - dev-server-bootstrap_traefik-net
+    env_file:
+      - backend-service-variables.env
+    deploy:
+      replicas: 1
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+      resources:
+        reservations:
+          memory: 220M
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.backend.rule=PathPrefix(`/backend`)"
+      - "traefik.http.routers.backend.middlewares=backend-stripprefix"
+      - "traefik.http.middlewares.backend-stripprefix.stripprefix.prefixes=/backend"
+      - "traefik.http.routers.backend.entrypoints=web"
+      - "traefik.http.services.backend.loadbalancer.server.port=8553"
+      - "traefik.http.routers.backend.service=backend"
+      - "traefik.docker.network=dev-server-bootstrap_traefik-net"
+
+networks:
+  dev-server-bootstrap_traefik-net:
+    external: true

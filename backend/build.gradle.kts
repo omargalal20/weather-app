@@ -3,21 +3,18 @@ plugins {
     val dependencyManagementVersion = "1.1.6"
     val kotlinVersion = "1.9.25"
     val jibVersion = "3.4.4"
-    val hibernateMavenVersion = "3.0.4"
     val detektVersion = "1.23.3"
     val ktlintVersion = "12.1.1"
 
     id("org.springframework.boot") version springBootVersion
     id("io.spring.dependency-management") version dependencyManagementVersion
     id("maven-publish")
-    id("org.hibernate.build.maven-repo-auth") version hibernateMavenVersion
     id("com.google.cloud.tools.jib") version jibVersion
     id("io.gitlab.arturbosch.detekt") version detektVersion
     id("org.jlleitschuh.gradle.ktlint") version ktlintVersion
 
     kotlin("jvm") version kotlinVersion
     kotlin("plugin.spring") version kotlinVersion
-    kotlin("plugin.jpa") version kotlinVersion
     kotlin("kapt") version kotlinVersion
 }
 
@@ -41,13 +38,11 @@ repositories {
 }
 
 dependencies {
-    val queryDslVersion = "5.0.0"
     val mapstructVersion = "1.6.3"
     val kotlinLoggingVersion = "5.0.1"
     val swaggerVersion = "2.6.0"
     val detektFormatterVersion = "1.23.3"
 
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.springframework.boot:spring-boot-starter-validation")
@@ -58,21 +53,14 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:$swaggerVersion")
 
-    implementation("com.querydsl:querydsl-core:$queryDslVersion")
-    implementation("com.querydsl:querydsl-jpa:$queryDslVersion:jakarta")
     implementation("org.mapstruct:mapstruct:$mapstructVersion")
-    implementation("org.flywaydb:flyway-core")
-    implementation("org.flywaydb:flyway-database-postgresql")
 
     compileOnly("org.projectlombok:lombok")
     developmentOnly("org.springframework.boot:spring-boot-devtools")
-    runtimeOnly("org.postgresql:postgresql")
 
     annotationProcessor("org.projectlombok:lombok")
     annotationProcessor("org.mapstruct:mapstruct-processor:$mapstructVersion")
-    annotationProcessor("com.querydsl:querydsl-apt:$queryDslVersion:jakarta")
 
-    kapt("com.querydsl:querydsl-apt:$queryDslVersion:jakarta")
     kapt("org.mapstruct:mapstruct-processor:$mapstructVersion")
 
     detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:$detektFormatterVersion")
@@ -101,7 +89,6 @@ kapt {
     }
     arguments {
         arg("kapt.kotlin.generated", file("build/generated/source/kapt/main"))
-        arg("plugin", "com.querydsl.apt.jpa.JPAAnnotationProcessor")
         arg("kapt.include.compile.classpath", "false")
     }
 }
@@ -113,7 +100,7 @@ jib {
         image = "eclipse-temurin:21-jdk-alpine"
     }
     container {
-        ports = listOf<String>("8080")
+        ports = listOf<String>("8553")
     }
 }
 
