@@ -10,11 +10,15 @@ pipeline {
         DEPLOYMENT_FILE = 'docker/docker-compose.backend.yml'
     }
 
+    when {
+        changeset '**/backend/**'
+    }
+
     stages {
         stage('Pre-Build') {
             steps {
                 echo 'Pre Build...'
-                dir('backend') { // Change directory to backend
+                dir('backend') {
                     sh 'chmod +x ./gradlew'
                     sh './gradlew clean'
                 }

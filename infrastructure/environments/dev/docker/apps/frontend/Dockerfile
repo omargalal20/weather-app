@@ -5,9 +5,6 @@
 FROM node:lts-alpine3.19 AS builder
 
 ARG BUILD_ENV
-ARG MAX_OLD_SPACE_SIZE
-
-ENV NODE_OPTIONS=--max_old_space_size=${MAX_OLD_SPACE_SIZE}
 
 WORKDIR /usr/src/app
 
@@ -19,7 +16,7 @@ RUN npm ci
 
 COPY . .
 
-RUN npm run build:${BUILD_ENV} --verbose
+RUN npm run build
 
 # ----------------------------
 # run with nginx

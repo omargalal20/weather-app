@@ -10,11 +10,15 @@ pipeline {
         DEPLOYMENT_FILE = 'docker/docker-compose.backend.yml'
     }
 
+    when {
+        changeset '**/backend/**' // Centralized condition for the entire pipeline
+    }
+
     stages {
         stage('Pre-Build') {
             steps {
                 echo 'Pre Build...'
-                dir('backend') { // Change directory to backend
+                dir('backend') {
                     sh 'chmod +x ./gradlew'
                     sh './gradlew clean'
                 }
@@ -71,7 +75,7 @@ pipeline {
 
                             sh "aws ecr get-login-password --region ${REGION} | docker login --username AWS --password-stdin ${ECR_URL}"
                             sh "docker-compose -f ./${DEPLOYMENT_FILE} --env-file ./docker/backend-service-variables.env config | docker-compose -f ./${DEPLOYMENT_FILE} up -d"
-                        }
+                                         }
                     }
                 }
             }

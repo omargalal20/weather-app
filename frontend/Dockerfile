@@ -4,6 +4,8 @@
 # ----------------------------
 FROM node:lts-alpine3.19 AS builder
 
+ARG BUILD_ENV
+
 WORKDIR /usr/src/app
 
 COPY package*.json /app/
@@ -14,7 +16,7 @@ RUN npm ci
 
 COPY . .
 
-RUN npm run build:${BUILD_ENV} --verbose
+RUN npm run build
 
 # ----------------------------
 # run with nginx
