@@ -11,10 +11,6 @@ pipeline {
         DEPLOYMENT_FILE = 'docker/docker-compose.frontend.yml'
     }
 
-    when {
-        changeset '**/frontend/**' // Centralized condition for the entire pipeline
-    }
-
     stages {
         stage('Pre-Build') {
             when {
