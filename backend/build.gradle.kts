@@ -3,14 +3,12 @@ plugins {
     val dependencyManagementVersion = "1.1.6"
     val kotlinVersion = "1.9.25"
     val jibVersion = "3.4.4"
-    val detektVersion = "1.23.3"
     val ktlintVersion = "12.1.1"
 
     id("org.springframework.boot") version springBootVersion
     id("io.spring.dependency-management") version dependencyManagementVersion
     id("maven-publish")
     id("com.google.cloud.tools.jib") version jibVersion
-    id("io.gitlab.arturbosch.detekt") version detektVersion
     id("org.jlleitschuh.gradle.ktlint") version ktlintVersion
 
     kotlin("jvm") version kotlinVersion
@@ -48,7 +46,6 @@ dependencies {
     val mapstructVersion = "1.6.3"
     val kotlinLoggingVersion = "5.0.1"
     val swaggerVersion = "2.6.0"
-    val detektFormatterVersion = "1.23.3"
 
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
@@ -69,8 +66,6 @@ dependencies {
     annotationProcessor("org.mapstruct:mapstruct-processor:$mapstructVersion")
 
     kapt("org.mapstruct:mapstruct-processor:$mapstructVersion")
-
-    detektPlugins("io.gitlab.arturbosch.detekt:detekt-formatting:$detektFormatterVersion")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")
