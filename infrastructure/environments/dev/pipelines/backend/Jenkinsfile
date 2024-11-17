@@ -4,7 +4,6 @@ pipeline {
     agent any
 
     environment {
-        CI = 'true'
         SERVICE_NAME = 'backend'
         ECR_REPO = 'weather-app-backend-repo'
         DEPLOYMENT_FILE = 'docker/docker-compose.backend.yml'
@@ -23,17 +22,16 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Build...'
-                dir('backend') {
-                    sh './gradlew build'
-                }
+            }
+        }
+        stage('Post Build') {
+            steps {
+                echo 'Build...'
             }
         }
         stage('Test') {
             steps {
                 echo 'Testing...'
-                dir('backend') {
-                // Add test commands if applicable
-                }
             }
         }
         stage('Pre-Deploy') {
@@ -70,16 +68,9 @@ pipeline {
                                          file(credentialsId: 'backend-service-variables', variable: 'backend_service_variables')]) {
                             writeFile file: 'docker/backend-service-variables.env', text: readFile(backend_service_variables)
 
-                            withAWS(credentials: 'aws', region: 'us-west-2') {
-                                sh "aws ecr get-login-password --region ${REGION} | docker login --username AWS --password-stdin ${ECR_URL}"
-                            }
-
-                            withAWS(credentials: 'aws', region: 'us-west-2') {
-                                echo 'Deploying...'
-                                sh "aws ecr get-login-password --region ${REGION} | docker login --username AWS --password-stdin ${ECR_URL}"
-                                sh "docker-compose -f ./${DEPLOYMENT_FILE} --env-file ./docker/backend-service-variables.env config | docker-compose -f ./${DEPLOYMENT_FILE} --with-registry-auth up -d"
-                            }
-                                         }
+                            sh "aws ecr get-login-password --region ${REGION} | docker login --username AWS --password-stdin ${ECR_URL}"
+                            sh "docker-compose -f ./${DEPLOYMENT_FILE} --env-file ./docker/backend-service-variables.env config | docker-compose -f ./${DEPLOYMENT_FILE} --with-registry-auth up -d"
+                        }
                     }
                 }
             }

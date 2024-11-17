@@ -24,6 +24,11 @@ pipeline {
                 echo 'Build...'
             }
         }
+        stage('Post Build') {
+            steps {
+                echo 'Build...'
+            }
+        }
         stage('Test') {
             steps {
                 echo 'Testing...'
@@ -38,9 +43,7 @@ pipeline {
                             string(credentialsId: 'ecr-url', variable: 'ECR_URL'),
                             string(credentialsId: 'aws-region', variable: 'REGION')
                         ]) {
-                            withAWS(credentials: 'aws', region: 'us-west-2') {
-                                sh "aws ecr get-login-password --region ${REGION} | docker login --username AWS --password-stdin ${ECR_URL}"
-                            }
+                            sh "aws ecr get-login-password --region ${REGION} | docker login --username AWS --password-stdin ${ECR_URL}"
 
                             version_value = sh(returnStdout: true, script: "grep -o 'version = [^,]*' build.gradle.kts").trim()
                             version = version_value.split(/ = /)[1].replaceAll('"', '')
@@ -65,15 +68,8 @@ pipeline {
                                          file(credentialsId: 'backend-service-variables', variable: 'backend_service_variables')]) {
                             writeFile file: 'docker/backend-service-variables.env', text: readFile(backend_service_variables)
 
-                            withAWS(credentials: 'aws', region: 'us-west-2') {
-                                sh "aws ecr get-login-password --region ${REGION} | docker login --username AWS --password-stdin ${ECR_URL}"
-                            }
-
-                            withAWS(credentials: 'aws', region: 'us-west-2') {
-                                echo 'Deploying...'
-                                sh "aws ecr get-login-password --region ${REGION} | docker login --username AWS --password-stdin ${ECR_URL}"
-                                sh "docker-compose -f ./${DEPLOYMENT_FILE} --env-file ./docker/backend-service-variables.env config | docker-compose -f ./${DEPLOYMENT_FILE} --with-registry-auth up -d"
-                            }
+                            sh "aws ecr get-login-password --region ${REGION} | docker login --username AWS --password-stdin ${ECR_URL}"
+                            sh "docker-compose -f ./${DEPLOYMENT_FILE} --env-file ./docker/backend-service-variables.env config | docker-compose -f ./${DEPLOYMENT_FILE} --with-registry-auth up -d"
                         }
                     }
                 }

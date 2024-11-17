@@ -1,5 +1,5 @@
 # Usage
-#   Start:          docker-compose -f docker-compose.backend.yaml up -d
+#   Start:          docker-compose -f docker-compose.backend.yml up -d
 
 version: "3"
 
