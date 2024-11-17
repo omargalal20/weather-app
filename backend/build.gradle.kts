@@ -23,7 +23,14 @@ version = "0.0.1"
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
+        // Use Java 17 if running in CI/CD, otherwise Java 21
+        val javaVersion =
+            if (System.getenv("CI") == "true") {
+                JavaLanguageVersion.of(17)
+            } else {
+                JavaLanguageVersion.of(21)
+            }
+        languageVersion.set(javaVersion)
     }
 }
 

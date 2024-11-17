@@ -18,8 +18,8 @@ sudo yum install amazon-ecr-credential-helper -y
 curl https://getmic.ro | bash
 sudo mv micro /usr/bin
 
-# # Make Swap to increase system performance
-# sudo dd if=/dev/zero of=/swapfile bs=512M count=32
-# sudo chmod 600 /swapfile
-# sudo mkswap /swapfile
-# sudo swapon /swapfile
+# # Make Swap using 16 GB to increase system performance
+sudo dd if=/dev/zero of=/swapfile bs=512M count=32
+sudo chmod 600 /swapfile
+sudo mkswap /swapfile
+sudo swapon /swapfile
