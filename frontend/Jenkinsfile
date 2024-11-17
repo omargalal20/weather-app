@@ -4,7 +4,7 @@ pipeline {
     agent any
 
     environment {
-        BUILD_VERSION = '0.0.1'
+        BUILD_VERSION = '0.0.2'
         CI = 'true'
         SERVICE_NAME = 'frontend'
         ECR_REPO = 'weather-app-frontend-repo'
