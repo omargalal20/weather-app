@@ -26,3 +26,17 @@ module "iam" {
   env_name     = var.env_name
   namespace    = local.namespace
 }
+
+
+module "server" {
+  source             = "../../modules/provider/aws/server"
+  vpc                = module.network.vpc
+  region             = var.region
+  project_name       = var.project_name
+  env_name           = var.env_name
+  namespace          = local.namespace
+  instance_type      = "t3.small"
+  key_name           = "${local.namespace}-server-key-pair"
+  key_pair_file_path = var.EC2_KEY_PAIR_PATH
+  iam_role_name      = module.iam.server_iam_role_name
+}

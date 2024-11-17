@@ -1,8 +1,8 @@
 ### IntelliJ IDEA ###
-.idea/
+.idea
 
 ### VS Code ###
-.vscode/
+.vscode
 
 ### Infracost ###
-.infracost/
+.infracost

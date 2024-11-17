@@ -23,8 +23,8 @@ variable "env_name" {
 
 # --- Secrets ---
 
-variable "VM_KEY_PAIR_PATH" {
-  description = "The local key pair path needed to store the vm ssh key"
+variable "EC2_KEY_PAIR_PATH" {
+  description = "The local key pair path needed to store the ec2 ssh key"
   type        = string
 }
 

@@ -1,0 +1,18 @@
+# Usage
+#   Start:          docker-compose -f whoami.yaml up -d
+
+version: "3"
+
+services:
+  whoami:
+    image: containous/whoami
+    networks:
+      - dev-server-bootstrap_traefik-net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.whoami.rule=PathPrefix(`/whoami`)"
+      - "traefik.http.routers.whoami.entrypoints=web"
+      - "traefik.http.services.whoami.loadbalancer.server.port=80"
+networks:
+  dev-server-bootstrap_traefik-net:
+    external: true

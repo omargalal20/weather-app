@@ -1,0 +1,68 @@
+# Usage
+#   Start:          docker-compose up -d
+#   Stop:           docker-compose down
+
+name: dev-server-bootstrap
+version: "3.8"
+
+services:
+  traefik-ingress:
+    container_name: traefik
+    image: traefik:v3.2
+    command:
+      - "--entrypoints.web.address=:80"
+      - "--providers.docker"
+      - "--providers.docker.exposedbydefault=false"
+      - "--ping=true"
+      - "--accesslog=true"
+      - "--api=true"
+      - "--api.dashboard=true"
+      - "--api.insecure=true"
+    ports:
+      - 80:80
+      - 8443:8080
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - traefik-net
+      - cicd
+
+  portainer:
+    container_name: portainer
+    image: portainer/portainer-ce:latest
+    ports:
+      - 9000:9000
+      - 9443:9443
+    volumes:
+      - portainer_data:/data
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - traefik-net
+      - cicd
+
+  jenkins:
+    container_name: jenkins
+    image: jenkins/jenkins:lts
+    privileged: true
+    user: root
+    ports:
+      - 8080:8080
+    environment:
+      DOCKER_HOST: tcp://docker:2376
+      DOCKER_CERT_PATH: /certs/client
+      DOCKER_TLS_VERIFY: 1
+    volumes:
+      - /jenkins:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /usr/local/bin/docker:/usr/local/bin/docker
+    networks:
+      - traefik-net
+      - cicd
+
+networks:
+  cicd:
+  traefik-net:
+
+volumes:
+  portainer_data:
+  jenkins:
