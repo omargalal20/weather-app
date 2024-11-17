@@ -3,13 +3,11 @@ plugins {
     val dependencyManagementVersion = "1.1.6"
     val kotlinVersion = "1.9.25"
     val jibVersion = "3.4.4"
-    val ktlintVersion = "12.1.1"
 
     id("org.springframework.boot") version springBootVersion
     id("io.spring.dependency-management") version dependencyManagementVersion
     id("maven-publish")
     id("com.google.cloud.tools.jib") version jibVersion
-    id("org.jlleitschuh.gradle.ktlint") version ktlintVersion
 
     kotlin("jvm") version kotlinVersion
     kotlin("plugin.spring") version kotlinVersion
