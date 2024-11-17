@@ -14,7 +14,7 @@ interface WeatherClient {
     fun getCurrent(
         @RequestParam("lat") latitude: Float,
         @RequestParam("lon") longitude: Float,
-        @RequestParam apiKey: String,
+        @RequestParam("appid") appId: String,
     ): CurrentWeatherResponse
 
     @GetMapping("/forecast")
@@ -22,6 +22,6 @@ interface WeatherClient {
         @RequestParam("lat") latitude: Float,
         @RequestParam("lon") longitude: Float,
         @RequestParam cnt: Int,
-        @RequestParam apiKey: String,
+        @RequestParam("appid") appId: String,
     ): ForecastWeatherResponse
 }
