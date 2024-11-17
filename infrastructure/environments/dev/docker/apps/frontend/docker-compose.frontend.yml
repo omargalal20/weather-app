@@ -1,7 +1,8 @@
 # Usage
-#   Start:          docker-compose -f docker-compose.frontend.yaml up -d
+#   Start:          docker-compose -f docker-compose.frontend.yml up -d
 
-version: "3"
+name: weather-app
+version: "3.8"
 
 services:
   frontend:
