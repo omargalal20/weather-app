@@ -17,11 +17,17 @@ pipeline {
 
     stages {
         stage('Pre-Build') {
+            when {
+                changeset '**/frontend/**'
+            }
             steps {
                 echo 'Pre-Build...'
             }
         }
         stage('Build') {
+            when {
+                changeset '**/frontend/**'
+            }
             steps {
                 echo 'Building...'
                 script {
@@ -35,11 +41,17 @@ pipeline {
             }
         }
         stage('Test') {
+            when {
+                changeset '**/frontend/**'
+            }
             steps {
                 echo 'Testing...'
             }
         }
         stage('Push Docker Image to ECR') {
+            when {
+                changeset '**/frontend/**'
+            }
             steps {
                 echo 'Pushing Docker image to ECR...'
                 script {
@@ -54,6 +66,9 @@ pipeline {
             }
         }
         stage('Deploy App') {
+            when {
+                changeset '**/frontend/**'
+            }
             steps {
                 echo 'Deploying App...'
                 script {

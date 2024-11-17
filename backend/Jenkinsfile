@@ -10,12 +10,11 @@ pipeline {
         DEPLOYMENT_FILE = 'docker/docker-compose.backend.yml'
     }
 
-    when {
-        changeset '**/backend/**'
-    }
-
     stages {
         stage('Pre-Build') {
+            when {
+                changeset '**/backend/**'
+            }
             steps {
                 echo 'Pre Build...'
                 dir('backend') {
@@ -25,21 +24,33 @@ pipeline {
             }
         }
         stage('Build') {
+            when {
+                changeset '**/backend/**'
+            }
             steps {
                 echo 'Build...'
             }
         }
         stage('Post Build') {
+            when {
+                changeset '**/backend/**'
+            }
             steps {
                 echo 'Build...'
             }
         }
         stage('Test') {
+            when {
+                changeset '**/backend/**'
+            }
             steps {
                 echo 'Testing...'
             }
         }
         stage('Pre-Deploy') {
+            when {
+                changeset '**/backend/**'
+            }
             steps {
                 echo 'Pre-Deploy...'
                 dir('backend') {
@@ -64,6 +75,9 @@ pipeline {
             }
         }
         stage('Deploy') {
+            when {
+                changeset '**/backend/**'
+            }
             steps {
                 echo 'Deploying...'
                 dir('backend') {
@@ -81,6 +95,9 @@ pipeline {
             }
         }
         stage('Post-Deploy') {
+            when {
+                changeset '**/backend/**'
+            }
             steps {
                 echo 'Post Deploy..'
             }
