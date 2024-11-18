@@ -1,5 +1,5 @@
 # Usage
-#   Start:          docker-compose -f whoami.yaml up -d
+#   Start:          docker-compose -f whoami.yml up -d
 
 version: "3"
 

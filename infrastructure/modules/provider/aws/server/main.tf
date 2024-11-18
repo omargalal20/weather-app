@@ -152,3 +152,9 @@ resource "aws_security_group" "server" {
     Name = "${var.namespace}-server-sg"
   }
 }
+
+resource "aws_lb_target_group_attachment" "server_alb_attachment" {
+  target_group_arn = var.aws_lb_target_group_arn
+  target_id        = aws_instance.server_instance.id
+  port             = 80
+}

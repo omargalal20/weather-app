@@ -41,3 +41,8 @@ variable "iam_role_name" {
   description = "The iam role name of the instance of the server"
   type        = string
 }
+
+variable "aws_lb_target_group_arn" {
+  description = "The arn of the application load balancer target group"
+  type        = string
+}

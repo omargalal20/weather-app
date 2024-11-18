@@ -11,7 +11,9 @@ sudo systemctl start docker
 sudo systemctl enable docker
 
 # Provide privileges to Docker to be used without admin privileges
+sudo systemctl daemon-reload
 sudo usermod -aG docker ec2-user
+sudo usermod -a -G docker jenkins
 
 # Install docker-compose
 sudo curl -SL https://github.com/docker/compose/releases/download/v2.23.1/docker-compose-linux-x86_64 -o /usr/local/bin/docker-compose
