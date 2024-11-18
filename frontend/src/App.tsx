@@ -1,4 +1,5 @@
 import React from 'react';
+import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { ThemeProvider } from 'styled-components';
 import { GlobalStyles } from './app.styled';
@@ -9,10 +10,14 @@ import { darkTheme, lightTheme } from './theme';
 const App: React.FC = () => {
   const darkMode = useSelector((state: AppStore) => state.app.darkMode);
   return (
-    <ThemeProvider theme={darkMode ? darkTheme : lightTheme}>
-      <GlobalStyles />
-      <Home />
-    </ThemeProvider>
+    <BrowserRouter basename='/home'>
+      <ThemeProvider theme={darkMode ? darkTheme : lightTheme}>
+        <GlobalStyles />
+        <Routes>
+          <Route path='/' element={<Home />} />
+        </Routes>
+      </ThemeProvider>
+    </BrowserRouter>
   );
 };
 

@@ -9,6 +9,8 @@ services:
     image: image-env
     networks:
       - dev-server-bootstrap_traefik-net
+    env_file:
+      - frontend-service-variables.env
     deploy:
       replicas: 1
       restart_policy:
@@ -22,7 +24,7 @@ services:
           memory: 10M
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.frontend.rule=Host(`ec2-54-189-157-96.us-west-2.compute.amazonaws.com`)"
+      - "traefik.http.routers.frontend.rule=PathPrefix(`/home`)"
       - "traefik.http.routers.frontend.entrypoints=web"
       - "traefik.http.services.frontend.loadbalancer.server.port=80"
       - "traefik.http.routers.frontend.service=frontend"
