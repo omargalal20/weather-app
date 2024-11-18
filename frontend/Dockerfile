@@ -33,7 +33,7 @@ RUN rm /etc/nginx/conf.d/default.conf
 COPY nginx.conf /etc/nginx/conf.d/
 
 # Copy the built application from the builder stage
-COPY --from=builder /usr/src/app/build /usr/share/nginx/html/
+COPY --from=builder /usr/src/app/build /usr/share/nginx/html/home
 
 # Expose port 80 for Nginx
 EXPOSE 80
