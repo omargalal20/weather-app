@@ -4,7 +4,7 @@ pipeline {
     agent any
 
     environment {
-        BUILD_VERSION = '1.0.3'
+        BUILD_VERSION = '1.0.4'
         CI = 'true'
         SERVICE_NAME = 'frontend'
         ECR_REPO = 'weather-app-frontend-repo'
@@ -19,6 +19,9 @@ pipeline {
             steps {
                 dir('frontend') {
                     echo 'Pre-Build...'
+                        withCredentials([file(credentialsId: 'frontend-service-variables', variable: 'frontend_service_variables')]) {
+                            writeFile file: '.env', text: readFile(frontend_service_variables)
+                        }
                 }
             }
         }
@@ -86,10 +89,8 @@ pipeline {
                                 writeYaml file: DEPLOYMENT_FILE, data: data, overwrite: true
                             }
 
-                            writeFile file: 'docker/frontend-service-variables.env', text: readFile(frontend_service_variables)
-
                             sh "aws ecr get-login-password --region ${REGION} | docker login --username AWS --password-stdin ${ECR_URL}"
-                            sh "docker-compose -f ./${DEPLOYMENT_FILE} --env-file ./docker/frontend-service-variables.env config | docker-compose -f ./${DEPLOYMENT_FILE} up -d"
+                            sh "docker-compose -f ./${DEPLOYMENT_FILE} up -d"
                         }
                     }
                 }
