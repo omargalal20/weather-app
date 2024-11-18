@@ -6,9 +6,9 @@
 
 - [Introduction](#introduction)
 - [Getting Started](#getting-started)
-  - [Frontend](#frontend)
-  - [Backend](#backend)
-  - [Infrastructure](#infrastructure)
+  - [Frontend Setup](#frontend-setup)
+  - [Backend Setup](#backend=setup)
+  - [Infrastructure Setup](#infrastructure-setup)
 - [EC2 Bootstrap Process](#ec2-bootstrap-process)
   - [Ingress](#ingress)
   - [Docker Visualizer](#docker-visualizer)
@@ -25,14 +25,14 @@
 
 - **Weather forecast for any city**
 - **Extended 7 days forecast**
-- **Find user location weather by utilizing GeolocationAPI (Note: Due to GeolocationAPI needs HTTPS to work, this functionality works locally but deployed needs a secure domain)**
+- **Find user location weather by utilizing GeolocationAPI (Note: Due to GeolocationAPI needing HTTPS to work, this functionality works locally but deployed needs a secure domain)**
 - **One-click Celcius to Fahrenheit conversion and vice versa**
 - **Dark Mode**
 
 # Getting Started
 
 ## Backend Setup
-First you need an API key from OpenWeatherMap, you can get one by creating an account on their website. After you got your API key, replace WEATHER_APIKEY with your OpenWeatherMap API Key.
+First, you need an API key from OpenWeatherMap, you can get one by creating an account on their website. After you got your API key, replace WEATHER_APIKEY with your OpenWeatherMap API Key.
 
 ```
 SERVER_PORT
@@ -46,7 +46,7 @@ SPRING_CLOUD_OPENFEIGN_CLIENT_CONFIG_WEATHER_URL=https://api.openweathermap.org/
 ```
 
 ## Frontend Setup
-First you need an API key from OpenWeatherMap, you can get one by creating an account on their website. After you got your API key, replace WEATHER_APIKEY with your OpenWeatherMap API Key.
+You will just need to add the backend url.
 
 ```
 REACT_APP_BACKEND_URL=Backend URL
@@ -57,14 +57,14 @@ REACT_APP_BACKEND_URL=Backend URL
 ### Prerequisites
 
 - AWS CLI must be installed. You can install it from the [AWS CLI installation guide](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html).
-- Ensure you create an IAM Role to get the access and secret key.
+- Please create an IAM role to get access and the secret key.
 - Configure (weather-app) profile in aws cli locally for terraform.
 
 ### Creating the `secrets.tfvars` File
 
-In order to provide sensitive information such as the path to your VM key pair, create a `secrets.tfvars` file. This file will be used to pass sensitive variables to Terraform commands.
+To provide sensitive information such as the path to your VM key pair, create a `secrets.tfvars` file. This file will be used to pass sensitive variables to Terraform commands.
 
-1. **Create a file within the desired the environment named `secrets.tfvars`:**
+1. **Create a file within the desired environment named `secrets.tfvars`:**
 
    ```sh
    touch secrets.tfvars
