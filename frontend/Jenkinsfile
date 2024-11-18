@@ -80,6 +80,12 @@ pipeline {
                         withCredentials([string(credentialsId: 'ecr-url', variable: 'ECR_URL'),
                                          string(credentialsId: 'aws-region', variable: 'REGION'),
                                          file(credentialsId: 'frontend-service-variables', variable: 'frontend_service_variables')]) {
+                            script {
+                                data = readYaml file: DEPLOYMENT_FILE
+                                data.services[SERVICE_NAME].image = "${ECR_URL}/${ECR_REPO}:${BUILD_VERSION}".replaceAll('"', '')
+                                writeYaml file: DEPLOYMENT_FILE, data: data, overwrite: true
+                            }
+
                             writeFile file: 'docker/frontend-service-variables.env', text: readFile(frontend_service_variables)
 
                             sh "aws ecr get-login-password --region ${REGION} | docker login --username AWS --password-stdin ${ECR_URL}"
