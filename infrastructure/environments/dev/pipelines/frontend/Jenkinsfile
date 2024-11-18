@@ -4,7 +4,7 @@ pipeline {
     agent any
 
     environment {
-        BUILD_VERSION = '0.0.1'
+        BUILD_VERSION = '1.0.4'
         CI = 'true'
         SERVICE_NAME = 'frontend'
         ECR_REPO = 'weather-app-frontend-repo'
@@ -17,7 +17,12 @@ pipeline {
                 changeset '**/frontend/**'
             }
             steps {
-                echo 'Pre-Build...'
+                dir('frontend') {
+                    echo 'Pre-Build...'
+                        withCredentials([file(credentialsId: 'frontend-service-variables', variable: 'frontend_service_variables')]) {
+                            writeFile file: '.env', text: readFile(frontend_service_variables)
+                        }
+                }
             }
         }
         stage('Build') {
@@ -25,13 +30,15 @@ pipeline {
                 changeset '**/frontend/**'
             }
             steps {
-                echo 'Building...'
-                script {
-                    withCredentials([string(credentialsId: 'ecr-url', variable: 'ECR_URL')]) {
-                        sh """
-                            docker build --build-arg BUILD_ENV=development -t ${ECR_REPO}:${BUILD_VERSION} .
-                            docker tag ${ECR_REPO}:${BUILD_VERSION} ${ECR_URL}/${ECR_REPO}:${BUILD_VERSION}
-                        """
+                dir('frontend') {
+                    echo 'Building...'
+                    script {
+                        withCredentials([string(credentialsId: 'ecr-url', variable: 'ECR_URL')]) {
+                            sh """
+                                docker build --build-arg BUILD_ENV=development -t ${ECR_REPO}:${BUILD_VERSION} .
+                                docker tag ${ECR_REPO}:${BUILD_VERSION} ${ECR_URL}/${ECR_REPO}:${BUILD_VERSION}
+                            """
+                        }
                     }
                 }
             }
@@ -41,7 +48,9 @@ pipeline {
                 changeset '**/frontend/**'
             }
             steps {
-                echo 'Testing...'
+                dir('frontend') {
+                    echo 'Testing...'
+                }
             }
         }
         stage('Push Docker Image to ECR') {
@@ -49,15 +58,17 @@ pipeline {
                 changeset '**/frontend/**'
             }
             steps {
-                echo 'Pushing Docker image to ECR...'
-                script {
-                    withCredentials([string(credentialsId: 'ecr-url', variable: 'ECR_URL'),
-                        string(credentialsId: 'aws-region', variable: 'REGION')]) {
-                        sh """
-                            aws ecr get-login-password --region ${REGION} | docker login --username AWS --password-stdin ${ECR_URL}
-                            docker push ${ECR_URL}/${ECR_REPO}:${BUILD_VERSION}
-                        """
+                dir('frontend') {
+                    echo 'Pushing Docker image to ECR...'
+                    script {
+                        withCredentials([string(credentialsId: 'ecr-url', variable: 'ECR_URL'),
+                            string(credentialsId: 'aws-region', variable: 'REGION')]) {
+                            sh """
+                                aws ecr get-login-password --region ${REGION} | docker login --username AWS --password-stdin ${ECR_URL}
+                                docker push ${ECR_URL}/${ECR_REPO}:${BUILD_VERSION}
+                            """
                         }
+                    }
                 }
             }
         }
@@ -66,19 +77,22 @@ pipeline {
                 changeset '**/frontend/**'
             }
             steps {
-                echo 'Deploying App...'
-                script {
-                    withCredentials([string(credentialsId: 'ecr-url', variable: 'ECR_URL'),
-                        string(credentialsId: 'aws-region', variable: 'REGION')]) {
-                        script {
-                            data = readYaml file: DEPLOYMENT_FILE
-                            data.services[SERVICE_NAME].image = "${ECR_URL}/${ECR_REPO}:${BUILD_VERSION}".replaceAll('"', '')
-                            writeYaml file: DEPLOYMENT_FILE, data: data, overwrite: true
-                        }
+                dir('frontend') {
+                    echo 'Deploying App...'
+                    script {
+                        withCredentials([string(credentialsId: 'ecr-url', variable: 'ECR_URL'),
+                                         string(credentialsId: 'aws-region', variable: 'REGION'),
+                                         file(credentialsId: 'frontend-service-variables', variable: 'frontend_service_variables')]) {
+                            script {
+                                data = readYaml file: DEPLOYMENT_FILE
+                                data.services[SERVICE_NAME].image = "${ECR_URL}/${ECR_REPO}:${BUILD_VERSION}".replaceAll('"', '')
+                                writeYaml file: DEPLOYMENT_FILE, data: data, overwrite: true
+                            }
 
                             sh "aws ecr get-login-password --region ${REGION} | docker login --username AWS --password-stdin ${ECR_URL}"
                             sh "docker-compose -f ./${DEPLOYMENT_FILE} up -d"
                         }
+                    }
                 }
             }
         }
