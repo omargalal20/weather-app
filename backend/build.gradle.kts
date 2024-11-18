@@ -15,7 +15,7 @@ plugins {
 }
 
 group = "com.weatherapp"
-version = "0.0.6"
+version = "1.0.0"
 
 java {
     toolchain {
