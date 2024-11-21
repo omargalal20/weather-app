@@ -32,21 +32,18 @@
 # Getting Started
 
 ## Backend Setup
-First, you need an API key from OpenWeatherMap, you can get one by creating an account on their website. After you got your API key, replace WEATHER_APIKEY with your OpenWeatherMap API Key.
+First, you need an API key from OpenWeatherMap. You can get one by creating an account on their website. After you get your API key, replace WEATHER_APIKEY with your OpenWeatherMap API Key.
 
 ```
 SERVER_PORT
 SPRING_PROFILES_ACTIVE
-SPRING_DATASOURCE_PASSWORD
-SPRING_DATASOURCE_URL
-SPRING_DATASOURCE_USERNAME
 WEATHER_APIKEY
 SPRING_CLOUD_OPENFEIGN_CLIENT_CONFIG_GEOCODE_URL=http://api.openweathermap.org/geo/1.0
 SPRING_CLOUD_OPENFEIGN_CLIENT_CONFIG_WEATHER_URL=https://api.openweathermap.org/data/2.5
 ```
 
 ## Frontend Setup
-You will just need to add the backend url.
+You will need to add the backend URL.
 
 ```
 REACT_APP_BACKEND_URL=Backend URL
@@ -57,7 +54,7 @@ REACT_APP_BACKEND_URL=Backend URL
 ### Prerequisites
 
 - AWS CLI must be installed. You can install it from the [AWS CLI installation guide](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html).
-- Please create an IAM role to get access and the secret key.
+- Please create an IAM role and the secret key to get access.
 - Configure (weather-app) profile in aws cli locally for terraform.
 
 ### Creating the `secrets.tfvars` File
