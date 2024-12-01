@@ -7,7 +7,7 @@
 - [Introduction](#introduction)
 - [Getting Started](#getting-started)
   - [Frontend Setup](#frontend-setup)
-  - [Backend Setup](#backend=setup)
+  - [Backend Setup](#backend-setup)
   - [Infrastructure Setup](#infrastructure-setup)
 - [EC2 Bootstrap Process](#ec2-bootstrap-process)
   - [Ingress](#ingress)
@@ -32,6 +32,7 @@
 # Getting Started
 
 ## Backend Setup
+
 First, you need an API key from OpenWeatherMap. You can get one by creating an account on their website. After you get your API key, replace WEATHER_APIKEY with your OpenWeatherMap API Key.
 
 ```
@@ -43,6 +44,7 @@ SPRING_CLOUD_OPENFEIGN_CLIENT_CONFIG_WEATHER_URL=https://api.openweathermap.org/
 ```
 
 ## Frontend Setup
+
 You will need to add the backend URL.
 
 ```
@@ -112,6 +114,7 @@ Automated the setup of the server to deploy the weather app, once you have SSH a
    cd docker/
    docker-compose up -d
    ```
+
 ### Architecture Overview
 
 The architecture comprises several layers, each responsible for specific functionalities:
@@ -133,4 +136,4 @@ The architecture comprises several layers, each responsible for specific functio
 
 ## Credits
 
-- **Frontend was inspired by https://github.com/silent-sea1119/react-weather-app/tree/main**
+- **Frontend was inspired by <https://github.com/silent-sea1119/react-weather-app/tree/main>**
