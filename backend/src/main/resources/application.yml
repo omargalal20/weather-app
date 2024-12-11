@@ -1,5 +1,4 @@
 spring:
-  application.name: weather-app-backend
+  application:
+    name: weather-app-backend
   jackson.default-property-inclusion: non_null
-  jpa:
-    open-in-view: false

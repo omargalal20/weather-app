@@ -19,7 +19,6 @@ version = "1.0.1"
 
 java {
     toolchain {
-        // Use Java 17 if running in CI/CD, otherwise Java 21
         val javaVersion =
             if (System.getenv("CI") == "true") {
                 JavaLanguageVersion.of(17)
@@ -44,11 +43,12 @@ dependencies {
     val mapstructVersion = "1.6.3"
     val kotlinLoggingVersion = "5.0.1"
     val swaggerVersion = "2.6.0"
+    val openFeignVersion = "4.1.3"
 
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("org.springframework.boot:spring-boot-starter-validation")
-    implementation("org.springframework.cloud:spring-cloud-starter-openfeign:4.1.3")
+    implementation("org.springframework.cloud:spring-cloud-starter-openfeign:$openFeignVersion")
 
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("io.github.oshai:kotlin-logging-jvm:$kotlinLoggingVersion")
